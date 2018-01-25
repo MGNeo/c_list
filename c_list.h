@@ -19,9 +19,17 @@ typedef struct s_c_list
  */
 
 c_list *c_list_create(void);
-ptrdiff_t c_list_delete(c_list *const _list, void (*const _del_func)(void *const _data));
 
-void *c_list_push_front(c_list *const _list, const size_t _data_size);
-ptrdiff_t c_list_pop_front(c_list *const _list, void (*const _del_func)(void *const _data));
+ptrdiff_t c_list_delete(c_list *const _list,
+                        void (*const _del_func)(void *const _data));
+
+void *c_list_push_front(c_list *const _list,
+                        const size_t _data_size);
+
+ptrdiff_t c_list_pop_front(c_list *const _list,
+                           void (*const _del_func)(void *const _data));
+
+void *c_list_push_back(c_list *const _list,
+                       const size_t _data_size);
 
 #endif
