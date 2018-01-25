@@ -1,4 +1,4 @@
-#ifndef C_LIST_H
+п»ї#ifndef C_LIST_H
 #define C_LIST_H
 
 #include <stdlib.h>
@@ -13,9 +13,9 @@ typedef struct s_c_list
     size_t nodes_count;
 } c_list;
 
-/* Формат узла двусвязного списка:
+/* Р¤РѕСЂРјР°С‚ СѓР·Р»Р° РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°:
  *                                  |___void *next___|___void *prev___|___uint8_t data[_data_size]___|
- * Указатель на узел указывает сюда ^
+ * РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СѓР·РµР» СѓРєР°Р·С‹РІР°РµС‚ СЃСЋРґР° ^
  */
 
 c_list *c_list_create(void);
