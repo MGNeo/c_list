@@ -32,4 +32,10 @@ ptrdiff_t c_list_pop_front(c_list *const _list,
 void *c_list_push_back(c_list *const _list,
                        const size_t _data_size);
 
+ptrdiff_t c_list_pop_back(c_list *const _list,
+                          void (*const _del_func)(void *const _data));
+
+void *c_list_insert(c_list *const _list,
+                    const size_t _data_size,
+                    const size_t _index);
 #endif

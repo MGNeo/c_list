@@ -33,7 +33,7 @@ ptrdiff_t c_list_delete(c_list *const _list,
                 delete_node = select_node;
                 select_node = *((void**)select_node);
 
-                _del_func((uint8_t*)delete_node + 2 * sizeof(void*));
+                _del_func((void**)delete_node + 2);
 
                 free(delete_node);
             }
@@ -80,7 +80,7 @@ void *c_list_push_front(c_list *const _list,
 
     ++_list->nodes_count;
 
-    return (uint8_t*)_list->first + 2 * sizeof(void*);
+    return (void**)_list->first + 2;
 }
 
 // Удаляет узел из начала двусвязного списка.
@@ -97,11 +97,13 @@ ptrdiff_t c_list_pop_front(c_list *const _list,
     if (_list->first != NULL)
     {
         *(((void**)_list->first) + 1) = NULL;
+    } else {
+        _list->last = NULL;
     }
 
     if (_del_func != NULL)
     {
-        _del_func((uint8_t*)delete_node + 2 * sizeof(void*));
+        _del_func((void**)delete_node + 2);
     }
 
     free(delete_node);
@@ -141,5 +143,105 @@ void *c_list_push_back(c_list *const _list,
 
     ++_list->nodes_count;
 
-    return (uint8_t*)_list->first + 2 * sizeof(void*);
+    return (void**)_list->first + 2;
+}
+
+// Удаляет узел с конца двусвязного списка.
+// В случае успеха возвращает > 0, иначе < 0.
+ptrdiff_t c_list_pop_back(c_list *const _list,
+                          void (*const _del_func)(void *const _data))
+{
+    if (_list == NULL) return -1;
+    if (_list->nodes_count == 0) return -2;
+
+    void *delete_node = _list->last;
+
+    _list->last = *((void**)_list->last + 1);
+    if (_list->last != NULL)
+    {
+        *((void**)_list->last) = NULL;
+    } else {
+        _list->first = NULL;
+    }
+
+    if (_del_func != NULL)
+    {
+        _del_func((void**)delete_node + 2);
+    }
+
+    free(delete_node);
+
+    --_list->nodes_count;
+
+    return 1;
+}
+
+// Вставка нового узла в заданную позицию.
+// В случае успеха возвращает указатель на неинициализированные данные нового узла.
+// В случае ошибки возвращает NULL.
+// Позволяет вставлять в пустой список, если _index = 0.
+void *c_list_insert(c_list *const _list,
+                    const size_t _data_size,
+                    const size_t _index)
+{
+    if (_list == NULL) return NULL;
+    if (_data_size == 0) return NULL;
+    if (_index > _list->nodes_count) return NULL;
+
+    // Контроль переполнения.
+    const size_t new_node_size = 2 * sizeof(void*) + _data_size;
+    if (new_node_size < _data_size) return NULL;
+
+    void *new_node = malloc(new_node_size);
+    if (new_node == NULL) return NULL;
+
+    // Если список пуст, то просто вставляем.
+    if (_list->nodes_count == 0)
+    {
+        *((void**)new_node) = NULL;
+        *((void**)new_node + 1) = NULL;
+
+        _list->first = new_node;
+        _list->last = new_node;
+
+        ++_list->nodes_count;
+
+        return (void**)new_node + 2;
+    }
+
+    // Обход списка оптимальным способом.
+    if (_index <= _list->nodes_count / 2)
+    {
+        void *prev_node = _list->first;
+        for (size_t i = 0; i < _index; ++i)
+        {
+            prev_node = *((void**)prev_node);
+        }
+
+        // Устанавливаем указатели в новом узле.
+        *((void**)new_node) = *((void**)prev_node);
+        *((void**)new_node + 1) = prev_node;
+
+        // Устанавливаем указатели в соседних узлах.
+        if (*((void**)prev_node) != NULL)
+        {
+            *((void**)(*((void**)prev_node)) + 1) = new_node;
+            *((void**)prev_node) = new_node;
+        }
+
+        if (_index == 0)
+        {
+            _list->first = new_node;
+        } else {
+            if (_index == _list->nodes_count - 1)
+            {
+                _list->last = new_node;
+            }
+        }
+
+        // Все это надо переделать...
+
+    } else {
+        // ...
+    }
 }
