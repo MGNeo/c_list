@@ -38,10 +38,13 @@ ptrdiff_t c_list_delete(c_list *const _list,
                 free(delete_node);
             }
         } else {
-            delete_node = select_node;
-            select_node = *((void**)select_node);
+            while(select_node != NULL)
+            {
+                delete_node = select_node;
+                select_node = *((void**)select_node);
 
-            free(delete_node);
+                free(delete_node);
+            }
         }
     }
 
@@ -215,6 +218,7 @@ void *c_list_insert(c_list *const _list,
             *((void**)new_node + 1) = NULL;
 
             *((void**)_list->first + 1) = new_node;
+            _list->first = new_node;
 
             ++_list->nodes_count;
 
@@ -227,7 +231,6 @@ void *c_list_insert(c_list *const _list,
             *((void**)new_node + 1) = _list->last;
 
             *((void**)_list->last) = new_node;
-
             _list->last = new_node;
 
             ++_list->nodes_count;
@@ -246,7 +249,7 @@ void *c_list_insert(c_list *const _list,
             *((void**)new_node) = *((void**)prev_node);
             *((void**)new_node + 1) = prev_node;
 
-            *( ((void**) ( *((void**)prev_node) )) + 1 ) = new_node;
+            *( ( (void**) ( *((void**)prev_node) ) ) + 1 ) = new_node;
             *((void**)prev_node) = new_node;
 
             ++_list->nodes_count;
@@ -269,5 +272,106 @@ void *c_list_insert(c_list *const _list,
 
             return (void**)new_node + 2;
         }
+    }
+}
+
+// Удаление узла с заданным индексом.
+// В случае успеха возвращает > 0, иначе < 0.
+ptrdiff_t c_list_erase(c_list *const _list,
+                       const size_t _index,
+                       void (*const _del_func)(void *const _data))
+{
+    if (_list == NULL) return -1;
+    if (_index >= _list->nodes_count) return -2;
+
+    void *delete_node;
+
+    // Удаление из начала.
+    if (_index == 0)
+    {
+        delete_node = _list->first;
+
+        _list->first = *((void**)_list->first);
+        if (_list->first != NULL)
+        {
+            *((void**)_list->first + 1) = NULL;
+        } else {
+            _list->last = NULL;
+        }
+
+        if (_del_func != NULL)
+        {
+            _del_func((void**)delete_node + 2);
+        }
+        free(delete_node);
+
+        --_list->nodes_count;
+
+        return 1;
+    }
+
+    // Удаление из конца.
+    if (_index == _list->nodes_count - 1)
+    {
+        delete_node = _list->last;
+
+        _list->last = *((void**)_list->last + 1);
+        if (_list->last != NULL)
+        {
+            *((void**)_list->last) = NULL;
+        } else {
+            _list->first = NULL;
+        }
+
+        if (_del_func != NULL)
+        {
+            _del_func((void**)delete_node + 2);
+        }
+        free(delete_node);
+
+        --_list->nodes_count;
+
+        return 2;
+    }
+
+    if (_index <= _list->nodes_count / 2)
+    {
+        delete_node = _list->first;
+        for (size_t i = 0; i < _index; ++i)
+        {
+            delete_node = *((void**)delete_node);
+        }
+
+        *((void**)(*((void**)delete_node + 1))) = *((void**)delete_node);
+        *(((void**)(*((void**)delete_node))) + 1) = *((void**)delete_node + 1);
+
+        if (_del_func != NULL)
+        {
+            _del_func((void**)delete_node + 2);
+        }
+        free(delete_node);
+
+        --_list->nodes_count;
+
+        return 3;
+    } else {
+        delete_node = _list->last;
+        for (size_t i = _list->nodes_count - 1; i > _index; --i)
+        {
+            delete_node = *((void**)delete_node + 1);
+        }
+
+        *((void**)(*((void**)delete_node + 1))) = *((void**)delete_node);
+        *(((void**)(*((void**)delete_node))) + 1) = *((void**)delete_node + 1);
+
+        if (_del_func != NULL)
+        {
+            _del_func((void**)delete_node + 2);
+        }
+        free(delete_node);
+
+        --_list->nodes_count;
+
+        return 4;
     }
 }
