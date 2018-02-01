@@ -195,7 +195,7 @@ void *c_list_insert(c_list *const _list,
     void *new_node = malloc(new_node_size);
     if (new_node == NULL) return NULL;
 
-    // Если список пуст, то просто вставляем.
+    // Если список пуст.
     if (_list->nodes_count == 0)
     {
         *((void**)new_node) = NULL;
@@ -207,41 +207,67 @@ void *c_list_insert(c_list *const _list,
         ++_list->nodes_count;
 
         return (void**)new_node + 2;
-    }
-
-    // Обход списка оптимальным способом.
-    if (_index <= _list->nodes_count / 2)
-    {
-        void *prev_node = _list->first;
-        for (size_t i = 0; i < _index; ++i)
-        {
-            prev_node = *((void**)prev_node);
-        }
-
-        // Устанавливаем указатели в новом узле.
-        *((void**)new_node) = *((void**)prev_node);
-        *((void**)new_node + 1) = prev_node;
-
-        // Устанавливаем указатели в соседних узлах.
-        if (*((void**)prev_node) != NULL)
-        {
-            *((void**)(*((void**)prev_node)) + 1) = new_node;
-            *((void**)prev_node) = new_node;
-        }
-
+    } else {
+        // Вставка в начало.
         if (_index == 0)
         {
-            _list->first = new_node;
-        } else {
-            if (_index == _list->nodes_count - 1)
-            {
-                _list->last = new_node;
-            }
+            *((void**)new_node) = _list->first;
+            *((void**)new_node + 1) = NULL;
+
+            *((void**)_list->first + 1) = new_node;
+
+            ++_list->nodes_count;
+
+            return (void**)new_node + 2;
         }
+        // Вставка в конец.
+        if (_index == _list->nodes_count)
+        {
+            *((void**)new_node) = NULL;
+            *((void**)new_node + 1) = _list->last;
 
-        // Все это надо переделать...
+            *((void**)_list->last) = new_node;
 
-    } else {
-        // ...
+            _list->last = new_node;
+
+            ++_list->nodes_count;
+
+            return (void**)new_node + 2;
+        }
+        // Вставка в середину.
+        if (_index <= _list->nodes_count / 2)
+        {
+            void *prev_node = _list->first;
+            for (size_t i = 0; i < _index - 1; ++i)
+            {
+                prev_node = *((void**)prev_node);
+            }
+
+            *((void**)new_node) = *((void**)prev_node);
+            *((void**)new_node + 1) = prev_node;
+
+            *( ((void**) ( *((void**)prev_node) )) + 1 ) = new_node;
+            *((void**)prev_node) = new_node;
+
+            ++_list->nodes_count;
+
+            return (void**)new_node + 2;
+        } else {
+            void *next_node = _list->last;
+            for (size_t i = _list->nodes_count - 1; i > _index; --i)
+            {
+                next_node = *((void**)next_node + 1);
+            }
+
+            *((void**)new_node) = next_node;
+            *((void**)new_node + 1) = *((void**)next_node + 1);
+
+            *( (void**) ( *((void**)next_node + 1) ) ) = new_node;
+            *((void**)next_node + 1) = new_node;
+
+            ++_list->nodes_count;
+
+            return (void**)new_node + 2;
+        }
     }
 }
