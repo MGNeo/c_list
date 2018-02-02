@@ -34,7 +34,6 @@ ptrdiff_t c_list_delete(c_list *const _list,
                 select_node = *((void**)select_node);
 
                 _del_func((void**)delete_node + 2);
-
                 free(delete_node);
             }
         } else {
@@ -374,4 +373,128 @@ ptrdiff_t c_list_erase(c_list *const _list,
 
         return 4;
     }
+}
+
+// Удаляет из двусвязного списка все узлы, для данных которых _comp возвращает > 0.
+// Возвращает количество удаленных узлов.
+// В случае ошибки возвращает 0.
+size_t c_list_remove_few(c_list *const _list,
+                         size_t (*const _comp)(void *const _data),
+                         void (*const _del_func)(void *const _data))
+{
+    if (_list == NULL) return 0;
+    if (_comp == NULL) return 0;
+    if (_list->nodes_count == 0) return 0;
+
+    size_t count = 0;
+
+    // ...
+}
+
+// Возвращает указатель на данные первого узла двусвязного списка.
+// В случае ошибки возвращает NULL.
+void *c_list_front(c_list *const _list)
+{
+    if (_list == NULL) return NULL;
+    if (_list->nodes_count == 0) return NULL;
+
+    return (void**)_list->first + 2;
+}
+
+// Возвращает указатель на данные узла двусвязного списка с заданным индексом.
+// В случае ошибки возвращает NULL.
+void *c_list_at(c_list *const _list,
+                const size_t _index)
+{
+    if (_list == NULL) return NULL;
+    if (_index >= _list->nodes_count) return NULL;
+
+    void *select_node;
+
+    if (_index <= _list->nodes_count / 2)
+    {
+        select_node = _list->first;
+        for (size_t i = 0; i < _index; ++i)
+        {
+            select_node = *((void**)select_node);
+        }
+
+        return (void**)select_node + 2;
+    } else {
+        select_node = _list->last;
+        for (size_t i = _list->nodes_count - 1; i > _index; --i)
+        {
+            select_node = *((void**)select_node + 1);
+        }
+
+        return (void**)select_node + 2;
+    }
+}
+
+// Возвращает указатель на данные последнего узла двусвязного списка.
+// В случае ошибки возвращает NULL.
+void *c_list_back(c_list *const _list)
+{
+    if (_list == NULL) return NULL;
+    if (_list->nodes_count == 0) return NULL;
+
+    return (void**)_list->last + 2;
+}
+
+// Проход по всему списку и выполнение над данными каждого узла двусвязного списка функции _func.
+// В случае успеха возвращает > 0, в случае ошибки < 0.
+ptrdiff_t c_list_for_each(c_list *const _list,
+                          void (*const _func(void *const _data)))
+{
+    if (_list == NULL) return -1;
+    if (_func == NULL) return -2;
+    if (_list->nodes_count == 0) return 1;
+
+    void *select_node = _list->first;
+    while(select_node != NULL)
+    {
+        _func((void**)select_node + 2);
+
+        select_node = *((void**)select_node);
+    }
+
+    return 2;
+}
+
+// Очищает список ото всех узлов.
+// В случае успеха возвращает > 0, в случае ошибки < 0.
+ptrdiff_t c_list_clear(c_list *const _list,
+                       void (*const _del_func)(void* const _data))
+{
+    if (_list == NULL) return -1;
+    if (_list->nodes_count == 0) return 1;// Как лучше сделать?
+
+    void *select_node = _list->first,
+         *delete_node;
+
+    if (_del_func != NULL)
+    {
+        while(select_node != NULL)
+        {
+            delete_node = select_node;
+            select_node = *((void**)select_node);
+
+            _del_func((void**)delete_node + 2);
+            free(delete_node);
+        }
+    } else {
+        while(select_node != NULL)
+        {
+            delete_node = select_node;
+            select_node = *((void**)select_node);
+
+            free(delete_node);
+        }
+    }
+
+    _list->first = NULL;
+    _list->last = NULL;
+    _list->nodes_count = NULL;
+
+    return 1;
 }
