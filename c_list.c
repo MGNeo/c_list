@@ -1,7 +1,7 @@
-п»ї#include "c_list.h"
+#include "c_list.h"
 
-// РЎРѕР·РґР°РµС‚ РЅРѕРІС‹Р№ РґРІСѓСЃРІСЏР·РЅС‹Р№ СЃРїРёСЃРѕРє.
-// Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё РІРѕР·РІСЂР°С‰Р°РµС‚ NULL.
+// Создает новый двусвязный список.
+// В случае ошибки возвращает NULL.
 c_list *c_list_create(void)
 {
     c_list *new_list = (c_list*)malloc(sizeof(c_list));
@@ -14,8 +14,8 @@ c_list *c_list_create(void)
     return new_list;
 }
 
-// РЈРґР°Р»СЏРµС‚ РґРІСѓСЃРІСЏР·РЅС‹Р№ СЃРїРёСЃРѕРє.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ > 0, РёРЅР°С‡Рµ < 0.
+// Удаляет двусвязный список.
+// В случае успеха возвращает > 0, иначе < 0.
 ptrdiff_t c_list_delete(c_list *const _list,
                         void (*const _del_func)(void *const _data))
 {
@@ -52,16 +52,16 @@ ptrdiff_t c_list_delete(c_list *const _list,
     return 1;
 }
 
-// Р’СЃС‚Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№ СѓР·РµР» РІ РЅР°С‡Р°Р»Рѕ РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РІСЃС‚Р°РІР»РµРЅРЅРѕРіРѕ СѓР·Р»Р°.
-// Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё РІРѕР·РІСЂР°С‰Р°РµС‚ NULL.
+// Вставляет новый узел в начало двусвязного списка.
+// В случае успеха возвращает указатель на неинициализированные данные вставленного узла.
+// В случае ошибки возвращает NULL.
 void *c_list_push_front(c_list *const _list,
                         const size_t _data_size)
 {
     if (_list == NULL) return NULL;
     if (_data_size == 0) return NULL;
 
-    // РљРѕРЅС‚СЂРѕР»СЊ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏ.
+    // Контроль переполнения.
     const size_t new_node_size = 2 * sizeof(void*) + _data_size;
     if (new_node_size < _data_size) return NULL;
 
@@ -85,8 +85,8 @@ void *c_list_push_front(c_list *const _list,
     return (void**)_list->first + 2;
 }
 
-// РЈРґР°Р»СЏРµС‚ СѓР·РµР» РёР· РЅР°С‡Р°Р»Р° РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ > 0, РёРЅР°С‡Рµ < 0.
+// Удаляет узел из начала двусвязного списка.
+// В случае успеха возвращает > 0, иначе < 0.
 ptrdiff_t c_list_pop_front(c_list *const _list,
                            void (*const _del_func)(void *const _data))
 {
@@ -115,16 +115,16 @@ ptrdiff_t c_list_pop_front(c_list *const _list,
     return 1;
 }
 
-// Р’СЃС‚Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№ СѓР·РµР» РІ РєРѕРЅРµС† РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РІСЃС‚Р°РІР»РµРЅРЅРѕРіРѕ СѓР·Р»Р°.
-// Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё РІРѕР·РІСЂР°С‰Р°РµС‚ NULL.
+// Вставляет новый узел в конец двусвязного списка.
+// В случае успеха возвращает указатель на неинициализированные данные вставленного узла.
+// В случае ошибки возвращает NULL.
 void *c_list_push_back(c_list *const _list,
                        const size_t _data_size)
 {
     if (_list == NULL) return NULL;
     if (_data_size == 0) return NULL;
 
-    // РљРѕРЅС‚СЂРѕР»СЊ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏ.
+    // Контроль переполнения.
     const size_t new_node_size = 2 * sizeof(void*) + _data_size;
     if (new_node_size < _data_size) return NULL;
 
@@ -148,8 +148,8 @@ void *c_list_push_back(c_list *const _list,
     return (void**)_list->first + 2;
 }
 
-// РЈРґР°Р»СЏРµС‚ СѓР·РµР» СЃ РєРѕРЅС†Р° РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ > 0, РёРЅР°С‡Рµ < 0.
+// Удаляет узел с конца двусвязного списка.
+// В случае успеха возвращает > 0, иначе < 0.
 ptrdiff_t c_list_pop_back(c_list *const _list,
                           void (*const _del_func)(void *const _data))
 {
@@ -178,10 +178,10 @@ ptrdiff_t c_list_pop_back(c_list *const _list,
     return 1;
 }
 
-// Р’СЃС‚Р°РІРєР° РЅРѕРІРѕРіРѕ СѓР·Р»Р° РІ Р·Р°РґР°РЅРЅСѓСЋ РїРѕР·РёС†РёСЋ.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РЅРѕРІРѕРіРѕ СѓР·Р»Р°.
-// Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё РІРѕР·РІСЂР°С‰Р°РµС‚ NULL.
-// РџРѕР·РІРѕР»СЏРµС‚ РІСЃС‚Р°РІР»СЏС‚СЊ РІ РїСѓСЃС‚РѕР№ СЃРїРёСЃРѕРє, РµСЃР»Рё _index = 0.
+// Вставка нового узла в заданную позицию.
+// В случае успеха возвращает указатель на неинициализированные данные нового узла.
+// В случае ошибки возвращает NULL.
+// Позволяет вставлять в пустой список, если _index = 0.
 void *c_list_insert(c_list *const _list,
                     const size_t _data_size,
                     const size_t _index)
@@ -190,14 +190,14 @@ void *c_list_insert(c_list *const _list,
     if (_data_size == 0) return NULL;
     if (_index > _list->nodes_count) return NULL;
 
-    // РљРѕРЅС‚СЂРѕР»СЊ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏ.
+    // Контроль переполнения.
     const size_t new_node_size = 2 * sizeof(void*) + _data_size;
     if (new_node_size < _data_size) return NULL;
 
     void *new_node = malloc(new_node_size);
     if (new_node == NULL) return NULL;
 
-    // Р•СЃР»Рё СЃРїРёСЃРѕРє РїСѓСЃС‚.
+    // Если список пуст.
     if (_list->nodes_count == 0)
     {
         *((void**)new_node) = NULL;
@@ -210,7 +210,7 @@ void *c_list_insert(c_list *const _list,
 
         return (void**)new_node + 2;
     } else {
-        // Р’СЃС‚Р°РІРєР° РІ РЅР°С‡Р°Р»Рѕ.
+        // Вставка в начало.
         if (_index == 0)
         {
             *((void**)new_node) = _list->first;
@@ -223,7 +223,7 @@ void *c_list_insert(c_list *const _list,
 
             return (void**)new_node + 2;
         }
-        // Р’СЃС‚Р°РІРєР° РІ РєРѕРЅРµС†.
+        // Вставка в конец.
         if (_index == _list->nodes_count)
         {
             *((void**)new_node) = NULL;
@@ -236,7 +236,7 @@ void *c_list_insert(c_list *const _list,
 
             return (void**)new_node + 2;
         }
-        // Р’СЃС‚Р°РІРєР° РІ СЃРµСЂРµРґРёРЅСѓ.
+        // Вставка в середину.
         if (_index <= _list->nodes_count / 2)
         {
             void *prev_node = _list->first;
@@ -274,8 +274,8 @@ void *c_list_insert(c_list *const _list,
     }
 }
 
-// РЈРґР°Р»РµРЅРёРµ СѓР·Р»Р° СЃ Р·Р°РґР°РЅРЅС‹Рј РёРЅРґРµРєСЃРѕРј.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ > 0, РёРЅР°С‡Рµ < 0.
+// Удаление узла с заданным индексом.
+// В случае успеха возвращает > 0, иначе < 0.
 ptrdiff_t c_list_erase(c_list *const _list,
                        const size_t _index,
                        void (*const _del_func)(void *const _data))
@@ -285,7 +285,7 @@ ptrdiff_t c_list_erase(c_list *const _list,
 
     void *delete_node;
 
-    // РЈРґР°Р»РµРЅРёРµ РёР· РЅР°С‡Р°Р»Р°.
+    // Удаление из начала.
     if (_index == 0)
     {
         delete_node = _list->first;
@@ -309,7 +309,7 @@ ptrdiff_t c_list_erase(c_list *const _list,
         return 1;
     }
 
-    // РЈРґР°Р»РµРЅРёРµ РёР· РєРѕРЅС†Р°.
+    // Удаление из конца.
     if (_index == _list->nodes_count - 1)
     {
         delete_node = _list->last;
@@ -333,6 +333,7 @@ ptrdiff_t c_list_erase(c_list *const _list,
         return 2;
     }
 
+    // Удаление не из конца и не из начала.
     if (_index <= _list->nodes_count / 2)
     {
         delete_node = _list->first;
@@ -375,9 +376,9 @@ ptrdiff_t c_list_erase(c_list *const _list,
     }
 }
 
-// РЈРґР°Р»СЏРµС‚ РёР· РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР° РІСЃРµ СѓР·Р»С‹, РґР»СЏ РґР°РЅРЅС‹С… РєРѕС‚РѕСЂС‹С… _comp РІРѕР·РІСЂР°С‰Р°РµС‚ > 0.
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СѓРґР°Р»РµРЅРЅС‹С… СѓР·Р»РѕРІ.
-// Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё РІРѕР·РІСЂР°С‰Р°РµС‚ 0.
+// Удаляет из двусвязного списка все узлы, для данных которых _comp возвращает > 0.
+// Возвращает количество удаленных узлов.
+// В случае ошибки возвращает 0.
 size_t c_list_remove_few(c_list *const _list,
                          size_t (*const _comp)(void *const _data),
                          void (*const _del_func)(void *const _data))
@@ -388,11 +389,75 @@ size_t c_list_remove_few(c_list *const _list,
 
     size_t count = 0;
 
-    // ...
+    void *select_node = _list->first,
+         *prev_node,
+         *delete_node;
+
+    size_t del_flag = 0;
+
+    if (_del_func == NULL)
+    {
+        for (size_t i = 0; i < _list->nodes_count; ++i)
+        {
+            if (_comp((void**)select_node + 2) > 0)
+            {
+
+                if (del_flag == 0)
+                {
+                    del_flag = 1;
+                    prev_node = *((void**)select_node + 1);
+
+                    // Для сокращения кол-ва холостых проверок, данный if лежит внутри if(del_flag == 0).
+                    if (i == 0)
+                    {
+                        _list->first = NULL;
+                    } else {
+                        if (i == _list->nodes_count - 1)
+                        {
+                            _list->last = NULL;
+                        }
+                    }
+                }
+                delete_node = select_node;
+                select_node = *((void**)select_node);
+                free(delete_node);
+                ++count;
+            } else {
+                if (del_flag == 1)
+                {
+                    *((void**)select_node + 1) = prev_node;
+                    if (prev_node != NULL)
+                    {
+                        *((void**)prev_node) = select_node;
+                    }
+                    del_flag = 0;
+
+                    if (_list->first == NULL)
+                    {
+                        _list->fist = select_node;
+                    }
+                }
+                select_node = *((void**)select_node);
+            }
+        }
+        if (_list->last == NULL)
+        {
+            if (_list->first == NULL)
+            {
+                _list->last = NULL;
+            } else {
+                _list->last = prev_node;// Проверить это...
+            }
+        }
+    }
+
+    _list->nodes_count -= count;
+
+    return count;
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ РїРµСЂРІРѕРіРѕ СѓР·Р»Р° РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°.
-// Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё РІРѕР·РІСЂР°С‰Р°РµС‚ NULL.
+// Возвращает указатель на данные первого узла двусвязного списка.
+// В случае ошибки возвращает NULL.
 void *c_list_front(c_list *const _list)
 {
     if (_list == NULL) return NULL;
@@ -401,8 +466,8 @@ void *c_list_front(c_list *const _list)
     return (void**)_list->first + 2;
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ СѓР·Р»Р° РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР° СЃ Р·Р°РґР°РЅРЅС‹Рј РёРЅРґРµРєСЃРѕРј.
-// Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё РІРѕР·РІСЂР°С‰Р°РµС‚ NULL.
+// Возвращает указатель на данные узла двусвязного списка с заданным индексом.
+// В случае ошибки возвращает NULL.
 void *c_list_at(c_list *const _list,
                 const size_t _index)
 {
@@ -431,8 +496,8 @@ void *c_list_at(c_list *const _list,
     }
 }
 
-// Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ РїРѕСЃР»РµРґРЅРµРіРѕ СѓР·Р»Р° РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°.
-// Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё РІРѕР·РІСЂР°С‰Р°РµС‚ NULL.
+// Возвращает указатель на данные последнего узла двусвязного списка.
+// В случае ошибки возвращает NULL.
 void *c_list_back(c_list *const _list)
 {
     if (_list == NULL) return NULL;
@@ -441,8 +506,8 @@ void *c_list_back(c_list *const _list)
     return (void**)_list->last + 2;
 }
 
-// РџСЂРѕС…РѕРґ РїРѕ РІСЃРµРјСѓ СЃРїРёСЃРєСѓ Рё РІС‹РїРѕР»РЅРµРЅРёРµ РЅР°Рґ РґР°РЅРЅС‹РјРё РєР°Р¶РґРѕРіРѕ СѓР·Р»Р° РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР° С„СѓРЅРєС†РёРё _func.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ > 0, РІ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё < 0.
+// Проход по всему списку и выполнение над данными каждого узла двусвязного списка функции _func.
+// В случае успеха возвращает > 0, в случае ошибки < 0.
 ptrdiff_t c_list_for_each(c_list *const _list,
                           void (*const _func(void *const _data)))
 {
@@ -461,13 +526,13 @@ ptrdiff_t c_list_for_each(c_list *const _list,
     return 2;
 }
 
-// РћС‡РёС‰Р°РµС‚ СЃРїРёСЃРѕРє РѕС‚Рѕ РІСЃРµС… СѓР·Р»РѕРІ.
-// Р’ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РІРѕР·РІСЂР°С‰Р°РµС‚ > 0, РІ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё < 0.
+// Очищает список ото всех узлов.
+// В случае успеха возвращает > 0, в случае ошибки < 0.
 ptrdiff_t c_list_clear(c_list *const _list,
                        void (*const _del_func)(void* const _data))
 {
     if (_list == NULL) return -1;
-    if (_list->nodes_count == 0) return 1;// РљР°Рє Р»СѓС‡С€Рµ СЃРґРµР»Р°С‚СЊ?
+    if (_list->nodes_count == 0) return 1;
 
     void *select_node = _list->first,
          *delete_node;
