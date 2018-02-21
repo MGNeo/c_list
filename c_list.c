@@ -401,22 +401,20 @@ size_t c_list_remove_few(c_list *const _list,
         {
             if (_comp((void**)select_node + 2) > 0)
             {
+                if (i == 0)
+                {
+                    _list->first = NULL;
+                } else {
+                    if (i == _list->nodes_count - 1)
+                    {
+                        _list->last = NULL;
+                    }
+                }
 
                 if (del_flag == 0)
                 {
                     del_flag = 1;
                     prev_node = *((void**)select_node + 1);
-
-                    // Для сокращения кол-ва холостых проверок, данный if лежит внутри if(del_flag == 0).
-                    if (i == 0)
-                    {
-                        _list->first = NULL;
-                    } else {
-                        if (i == _list->nodes_count - 1)
-                        {
-                            _list->last = NULL;
-                        }
-                    }
                 }
                 delete_node = select_node;
                 select_node = *((void**)select_node);
@@ -434,7 +432,7 @@ size_t c_list_remove_few(c_list *const _list,
 
                     if (_list->first == NULL)
                     {
-                        _list->fist = select_node;
+                        _list->first = select_node;
                     }
                 }
                 select_node = *((void**)select_node);
@@ -446,7 +444,64 @@ size_t c_list_remove_few(c_list *const _list,
             {
                 _list->last = NULL;
             } else {
-                _list->last = prev_node;// Проверить это...
+                _list->last = prev_node;
+                *((void**)_list->last) = NULL;
+            }
+        }
+        // Дублирование кода ради повышения производительности,
+        // для того, чтобы при каждом переходе к следующему узлу не
+        // проверять if (_del_func == NULL).
+    } else {
+        for (size_t i = 0; i < _list->nodes_count; ++i)
+        {
+            if (_comp((void**)select_node + 2) > 0)
+            {
+                if (i == 0)
+                {
+                    _list->first = NULL;
+                } else {
+                    if (i == _list->nodes_count - 1)
+                    {
+                        _list->last = NULL;
+                    }
+                }
+
+                if (del_flag == 0)
+                {
+                    del_flag = 1;
+                    prev_node = *((void**)select_node + 1);
+                }
+                delete_node = select_node;
+                select_node = *((void**)select_node);
+                _del_func((void**)delete_node + 2);
+                free(delete_node);
+                ++count;
+            } else {
+                if (del_flag == 1)
+                {
+                    *((void**)select_node + 1) = prev_node;
+                    if (prev_node != NULL)
+                    {
+                        *((void**)prev_node) = select_node;
+                    }
+                    del_flag = 0;
+
+                    if (_list->first == NULL)
+                    {
+                        _list->first = select_node;
+                    }
+                }
+                select_node = *((void**)select_node);
+            }
+        }
+        if (_list->last == NULL)
+        {
+            if (_list->first == NULL)
+            {
+                _list->last = NULL;
+            } else {
+                _list->last = prev_node;
+                *((void**)_list->last) = NULL;
             }
         }
     }
