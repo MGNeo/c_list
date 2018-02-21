@@ -145,7 +145,7 @@ void *c_list_push_back(c_list *const _list,
 
     ++_list->nodes_count;
 
-    return (void**)_list->first + 2;
+    return (void**)_list->last + 2;
 }
 
 // Удаляет узел с конца двусвязного списка.
