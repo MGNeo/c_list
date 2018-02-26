@@ -376,6 +376,86 @@ ptrdiff_t c_list_erase(c_list *const _list,
     }
 }
 
+// Удаляет несколько узлов с заданными индексами.
+// Массив, на который указывает _indexes, сортируется.
+// Наличие несуществующих или одинаковых индексов не считается ошибкой.
+// В случае успеха функция возвращает кол-во удаленных узлов.
+// В случае ошибки 0.
+size_t c_list_erase_few(c_list *const _list,
+                        size_t *const _indexes,
+                        const size_t _indexes_count,
+                        void (*const _del_func)(void *const _data))
+{
+    if (_list == NULL) return 0;
+    if (_indexes == NULL) return 0;
+    if (_indexes_count == 0) return 0;
+    if (_list->nodes_count == 0) return 0;
+
+    // Компаратор для сортировки массива.
+    ptrdiff_t comp_sort(const void *const _a,
+                        const void *const _b)
+    {
+        const size_t a = *((size_t*)_a);
+        const size_t b = *((size_t*)_b);
+        if (a > b)
+        {
+            return 1;
+        } else {
+            if (a == b)
+            {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    }
+
+    // Сортируем массив индексов.
+    qsort(_indexes, _indexes_count, sizeof(size_t), comp_sort);
+
+    // Если корректных индексов нет, то завершаем.
+    if (_indexes[0] > _list->nodes_count) return 0;
+
+    // Избавимся от повторяющихся индексов.
+    size_t i_index = 0;
+    for (size_t i = 1; (i < _indexes_count) && (_indexes[i] < _list->nodes_count); ++i)
+    {
+        if (_indexes[i] != _indexes[i - 1])
+        {
+            _indexes[++i_index] = _indexes[i];
+        }
+    }
+
+    // Удалим узлы с заданными индексами и сошьем образовавшиеся в списке разрывы.
+    size_t count = 0;
+
+    void *select_node = _list->first,
+         *prev_node,
+         *delete_node;
+
+    size_t del_flag = 0;
+
+    if (_del_func == NULL)
+    {
+        for (size_t i = 0; i < _list->nodes_count; ++i)
+        {
+            if (i == _indexes[count])
+            {
+
+            } else {
+                if (del_flag == 1)
+                {
+                    // Сшиваем разрыв.
+                }
+            }
+        }
+    } else {
+        // ...
+    }
+
+    return 1;
+}
+
 // Удаляет из двусвязного списка все узлы, для данных которых _comp возвращает > 0.
 // Возвращает количество удаленных узлов.
 // В случае ошибки возвращает 0.

@@ -43,6 +43,11 @@ ptrdiff_t c_list_erase(c_list *const _list,
                        const size_t _index,
                        void (*const _del_func)(void *const _data));
 
+size_t c_list_erase_few(c_list *const _list,
+                        size_t *const _indexes,
+                        const size_t _indexes_count,
+                        void (*const _del_func)(void *const _data));
+
 size_t c_list_remove_few(c_list *const _list,
                          size_t (*const _comp)(void *const _data),
                          void (*const _del_func)(void *const _data));
