@@ -414,7 +414,7 @@ size_t c_list_erase_few(c_list *const _list,
     qsort(_indexes, _indexes_count, sizeof(size_t), comp_sort);
 
     // Если корректных индексов нет, то завершаем.
-    if (_indexes[0] > _list->nodes_count) return 0;
+    if (_indexes[0] >= _list->nodes_count) return 0;
 
     // Избавимся от повторяющихся индексов.
     size_t i_index = 0;
