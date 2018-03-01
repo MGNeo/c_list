@@ -60,7 +60,7 @@ void *c_list_at(c_list *const _list,
 void *c_list_back(c_list *const _list);
 
 ptrdiff_t c_list_for_each(c_list *const _list,
-                          void (*const _func(void *const _data)));
+                          void (*const _func)(void *const _data));
 
 ptrdiff_t c_list_clear(c_list *const _list,
                        void (*const _del_func)(void* const _data));
