@@ -739,7 +739,7 @@ void *c_list_back(c_list *const _list)
 // Проход по всему списку и выполнение над данными каждого узла двусвязного списка функции _func.
 // В случае успеха возвращает > 0, в случае ошибки < 0.
 ptrdiff_t c_list_for_each(c_list *const _list,
-                          void (*const _func(void *const _data)))
+                          void (*const _func)(void *const _data))
 {
     if (_list == NULL) return -1;
     if (_func == NULL) return -2;
