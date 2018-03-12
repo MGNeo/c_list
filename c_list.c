@@ -392,7 +392,7 @@ size_t c_list_erase_few(c_list *const _list,
     if (_list->nodes_count == 0) return 0;
 
     // Компаратор для сортировки массива.
-    ptrdiff_t comp_sort(const void *const _a,
+    int comp_sort(const void *const _a,
                         const void *const _b)
     {
         const size_t a = *((size_t*)_a);
@@ -789,7 +789,7 @@ ptrdiff_t c_list_clear(c_list *const _list,
 
     _list->first = NULL;
     _list->last = NULL;
-    _list->nodes_count = NULL;
+    _list->nodes_count = 0;
 
     return 1;
 }
