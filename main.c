@@ -1,4 +1,4 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -33,13 +33,13 @@ int main()
     ++iteration;
     printf("Iteration: %Iu\n", iteration);
 
-    // Создание двусвязного списка.
+    // РЎРѕР·РґР°РЅРёРµ РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°.
     c_list *list = c_list_create();
 
-    // Вставка в начало.
+    // Р’СЃС‚Р°РІРєР° РІ РЅР°С‡Р°Р»Рѕ.
     c_list_push_back(list, sizeof(void*));
 
-    // Вставки в случайные позиции.
+    // Р’СЃС‚Р°РІРєРё РІ СЃР»СѓС‡Р°Р№РЅС‹Рµ РїРѕР·РёС†РёРё.
     for (size_t i = 0; i < INSERT_COUNT; ++i)
     {
         const size_t index = rand() % list->nodes_count;
@@ -48,29 +48,29 @@ int main()
         *((float*)*((void**)data)) = ( rand() % RAND_MAX ) * pow(-1, rand() % 2);
     }
 
-    // Удаление по случайному критерию данных.
+    // РЈРґР°Р»РµРЅРёРµ РїРѕ СЃР»СѓС‡Р°Р№РЅРѕРјСѓ РєСЂРёС‚РµСЂРёСЋ РґР°РЅРЅС‹С….
     c_list_remove_few(list, comp, del_func);
     printf("nodes count after delete: %Iu\n", list->nodes_count);
     printf("first: %Iu\n", (size_t)list->first);
     printf("last: %Iu\n", (size_t)list->last);
 
-    // Удаление узлов с заданными индексами.
+    // РЈРґР°Р»РµРЅРёРµ СѓР·Р»РѕРІ СЃ Р·Р°РґР°РЅРЅС‹РјРё РёРЅРґРµРєСЃР°РјРё.
     size_t indexes[] = {0, 1};
-    c_list_erase_few(list, indexes, 2, del_func);// Вызывает утечку памяти.
+    c_list_erase_few(list, indexes, 2, del_func);// Р’С‹Р·С‹РІР°РµС‚ СѓС‚РµС‡РєСѓ РїР°РјСЏС‚Рё.
     printf("nodes count after delete: %Iu\n", list->nodes_count);
     printf("first: %Iu\n", (size_t)list->first);
     printf("last: %Iu\n", (size_t)list->last);
 
-    // Удаление списка.
+    // РЈРґР°Р»РµРЅРёРµ СЃРїРёСЃРєР°.
     c_list_delete(list, del_func);
 
-    // Повтор тестирования.
+    // РџРѕРІС‚РѕСЂ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ.
     goto AGAIN;
     return 0;
 }
 
 /*
 
-2) Решение проблемы с заданием обнуленного first в c_list_erase_few.
+2) Р РµС€РµРЅРёРµ РїСЂРѕР±Р»РµРјС‹ СЃ Р·Р°РґР°РЅРёРµРј РѕР±РЅСѓР»РµРЅРЅРѕРіРѕ first РІ c_list_erase_few.
 
 */
