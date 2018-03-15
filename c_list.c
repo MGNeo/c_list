@@ -60,6 +60,7 @@ void *c_list_push_front(c_list *const _list,
 {
     if (_list == NULL) return NULL;
     if (_data_size == 0) return NULL;
+    if (_list->nodes_count == SIZE_MAX) return NULL;// Не, ну а вдруг...)
 
     // Контроль переполнения.
     const size_t new_node_size = 2 * sizeof(void*) + _data_size;
@@ -123,6 +124,7 @@ void *c_list_push_back(c_list *const _list,
 {
     if (_list == NULL) return NULL;
     if (_data_size == 0) return NULL;
+    if (_list->nodes_count == SIZE_MAX) return NULL;// Не, ну а вдруг...)
 
     // Контроль переполнения.
     const size_t new_node_size = 2 * sizeof(void*) + _data_size;
@@ -188,6 +190,7 @@ void *c_list_insert(c_list *const _list,
 {
     if (_list == NULL) return NULL;
     if (_data_size == 0) return NULL;
+    if (_list->nodes_count == SIZE_MAX) return NULL;// Не, ну а вдруг...)
     if (_index > _list->nodes_count) return NULL;
 
     // Контроль переполнения.
@@ -428,6 +431,8 @@ size_t c_list_erase_few(c_list *const _list,
 
     // Теперь i_index == количеству корректных индексов.
     i_index += 1;
+    // Контроль переполнения.
+    if (i_index < i_index - 1) return NULL;// Не, ну а вдруг...)
 
     // Удалим узлы с заданными индексами и сошьем образовавшиеся в списке разрывы.
     size_t count = 0;
