@@ -68,9 +68,3 @@ int main()
     goto AGAIN;
     return 0;
 }
-
-/*
-
-2) Решение проблемы с заданием обнуленного first в c_list_erase_few.
-
-*/
