@@ -1,10 +1,24 @@
-﻿#include "c_list.h"
+﻿/*
+    Файл реализации двусвязного списка c_list
+    Разработка, отладка и сборка производилась в:
+    ОС: Windows 10/x64
+    IDE: Code::Blocks 17.12
+    Компилятор: default Code::Blocks 17.12 MinGW
+
+    Разработчик: Глухманюк Максим
+    Эл. почта: mgneo@yandex.ru
+    Место: Российская Федерация, Самарская область, Сызрань
+    Дата: 16.03.2018
+    Лицензия: GPLv3
+*/
+
+#include "c_list.h"
 
 // Создает новый двусвязный список.
 // В случае ошибки возвращает NULL.
 c_list *c_list_create(void)
 {
-    c_list *new_list = (c_list*)malloc(sizeof(c_list));
+    c_list *const new_list = (c_list*)malloc(sizeof(c_list));
     if (new_list == NULL) return NULL;
 
     new_list->first = NULL;
@@ -66,7 +80,7 @@ void *c_list_push_front(c_list *const _list,
     const size_t new_node_size = 2 * sizeof(void*) + _data_size;
     if (new_node_size < _data_size) return NULL;
 
-    void *new_node = malloc(new_node_size);
+    void *const new_node = malloc(new_node_size);
     if (new_node == NULL) return NULL;
 
     *((void**)new_node) = _list->first;
@@ -130,7 +144,7 @@ void *c_list_push_back(c_list *const _list,
     const size_t new_node_size = 2 * sizeof(void*) + _data_size;
     if (new_node_size < _data_size) return NULL;
 
-    void *new_node = malloc(new_node_size);
+    void *const new_node = malloc(new_node_size);
     if (new_node == NULL) return NULL;
 
     *((void**)new_node) = NULL;
@@ -197,7 +211,7 @@ void *c_list_insert(c_list *const _list,
     const size_t new_node_size = 2 * sizeof(void*) + _data_size;
     if (new_node_size < _data_size) return NULL;
 
-    void *new_node = malloc(new_node_size);
+    void *const new_node = malloc(new_node_size);
     if (new_node == NULL) return NULL;
 
     // Если список пуст.

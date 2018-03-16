@@ -1,4 +1,18 @@
-﻿#ifndef C_LIST_H
+﻿/*
+    Заголовочный файл односвязного списка c_forward_list
+    Разработка, отладка и сборка производилась в:
+    ОС: Windows 10/x64
+    IDE: Code::Blocks 17.12
+    Компилятор: default Code::Blocks 17.12 MinGW
+
+    Разработчик: Глухманюк Максим
+    Эл. почта: mgneo@yandex.ru
+    Место: Российская Федерация, Самарская область, Сызрань
+    Дата: 16.03.2018
+    Лицензия: GPLv3
+*/
+
+#ifndef C_LIST_H
 #define C_LIST_H
 
 #include <stdlib.h>
