@@ -42,7 +42,7 @@ ptrdiff_t c_list_delete(c_list *const _list,
 
         if (_del_func != NULL)
         {
-            while(select_node != NULL)
+            while (select_node != NULL)
             {
                 delete_node = select_node;
                 select_node = *((void**)select_node);
@@ -51,7 +51,7 @@ ptrdiff_t c_list_delete(c_list *const _list,
                 free(delete_node);
             }
         } else {
-            while(select_node != NULL)
+            while (select_node != NULL)
             {
                 delete_node = select_node;
                 select_node = *((void**)select_node);
@@ -765,7 +765,7 @@ ptrdiff_t c_list_for_each(c_list *const _list,
     if (_list->nodes_count == 0) return 1;
 
     void *select_node = _list->first;
-    while(select_node != NULL)
+    while (select_node != NULL)
     {
         _func((void**)select_node + 2);
 
@@ -788,7 +788,7 @@ ptrdiff_t c_list_clear(c_list *const _list,
 
     if (_del_func != NULL)
     {
-        while(select_node != NULL)
+        while (select_node != NULL)
         {
             delete_node = select_node;
             select_node = *((void**)select_node);
@@ -797,7 +797,7 @@ ptrdiff_t c_list_clear(c_list *const _list,
             free(delete_node);
         }
     } else {
-        while(select_node != NULL)
+        while (select_node != NULL)
         {
             delete_node = select_node;
             select_node = *((void**)select_node);
