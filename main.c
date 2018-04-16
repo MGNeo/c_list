@@ -5,67 +5,71 @@
 
 #include "c_list.h"
 
-void del_func(void *const _data)
+// Проверка возвращаемых значений не выполняется для упрощения.
+
+// Функция печати содержимого узла
+void print_func_f(void *const _data)
 {
-    free( *((void**)_data) );
+    if (_data == NULL) return;
+
+    const float data = *((float*)_data);
+    printf("%f\n", data);
+    return;
 }
 
-size_t comp(void *const _data)
+// Функция удаления данных узла
+void del_func_f(void *const _data)
 {
-    float f = *((float*)_data);
-    float r = ( rand() % RAND_MAX ) * pow(-1, rand() % 2);
-    if (f > r)
-    {
-        return 1;
-    }
-    return 0;
+    if (_data == NULL) return;
+
+    free(_data);
+    return;
 }
 
 int main()
 {
-    size_t iteration = 0;
-
-    srand(time(NULL));
-
-    const size_t INSERT_COUNT = 1E4;
-
-    AGAIN:;
-
-    ++iteration;
-    printf("Iteration: %Iu\n", iteration);
-
     // Создание двусвязного списка.
     c_list *list = c_list_create();
 
-    // Вставка в начало.
-    c_list_push_back(list, sizeof(void*));
-
-    // Вставки в случайные позиции.
-    for (size_t i = 0; i < INSERT_COUNT; ++i)
+    // Добавление в конец десяти элементов.
+    const size_t count = 10;
+    float *data;
+    for (size_t i = 0; i < count; ++i)
     {
-        const size_t index = rand() % list->nodes_count;
-        void *data = c_list_insert(list, sizeof(void*), index);
-        *((void**)data) = malloc(sizeof(float));
-        *((float*)*((void**)data)) = ( rand() % RAND_MAX ) * pow(-1, rand() % 2);
+        data = (float*)malloc(sizeof(float));
+        *data = i * 1.1f;
+        c_list_push_back(list, data);
     }
 
-    // Удаление по случайному критерию данных.
-    c_list_remove_few(list, comp, del_func);
-    printf("nodes count after delete: %Iu\n", list->nodes_count);
-    printf("first: %Iu\n", (size_t)list->first);
-    printf("last: %Iu\n", (size_t)list->last);
 
-    // Удаление узлов с заданными индексами.
-    size_t indexes[] = {0, 1};
-    c_list_erase_few(list, indexes, 2, del_func);// Вызывает утечку памяти.
-    printf("nodes count after delete: %Iu\n", list->nodes_count);
-    printf("first: %Iu\n", (size_t)list->first);
-    printf("last: %Iu\n", (size_t)list->last);
 
-    // Удаление списка.
-    c_list_delete(list, del_func);
+    // Вывод содержимого двусвязного списка.
+    c_list_for_each(list, print_func_f);
 
-    // Повтор тестирования.
-    goto AGAIN;
+    // Удаление нескольких узлов с заданными индексами,
+    // индексы хранятся в неупорядоченном виде.
+    const size_t indexes_count = 3;
+    size_t indexes[indexes_count];
+    indexes[0] = 7;
+    indexes[1] = 1;
+    indexes[2] = 4;
+    c_list_erase_few(list, indexes, indexes_count, del_func_f);
+///////////////////////////////////////////
+c_list_node *select_node = list->first;
+while (select_node != NULL)
+{
+    printf("node: %Iu\nprev: %Iu\nnext: %Iu\ndata: %f\n\n",
+           (size_t)select_node,
+           (size_t)select_node->prev,
+           (size_t)select_node->next,
+           *((float*)select_node->data));
+
+    select_node = select_node->next;
+}
+///////////////////////////////////////////
+    // Вывод содержимого двусвязного списка.
+    c_list_for_each(list, print_func_f);
+
+    getchar();
     return 0;
 }
