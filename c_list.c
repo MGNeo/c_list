@@ -486,7 +486,7 @@ size_t c_list_erase_few(c_list *const _list,
                 select_node = select_node->next;
             }
         }
-        // Нужно ли это?
+        // Контроль указателя на первый узел.
         if (_list->first == NULL)
         {
             _list->first = select_node;
@@ -495,7 +495,7 @@ size_t c_list_erase_few(c_list *const _list,
                 _list->first->prev = NULL;
             }
         }
-        // И это?
+        // Контроль указателя на последний узел.
         if (_list->last == NULL)
         {
             _list->last = last_not_deleted_node;
@@ -504,8 +504,7 @@ size_t c_list_erase_few(c_list *const _list,
                 _list->last->next = NULL;
             }
         }
-        // Проблема в том, что после удаления последнего узла из списка удаления происходит выход из цикла
-        // без сшивания образовавшейся дыры.
+        // Сшивание дыры, если вдруг она осталась.
         if (del_flag == 1)
         {
             if (last_not_deleted_node != NULL)
