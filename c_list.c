@@ -14,7 +14,7 @@
 
 #include "c_list.h"
 
-// Компаратор для сортировки массива.
+// Компаратор для сортировки массива с индексами узлов, которые необходимо удалить.
 static int comp_sort(const void *const _a,
                     const void *const _b)
 {
