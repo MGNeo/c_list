@@ -16,7 +16,7 @@
 
 // Компаратор для сортировки массива с индексами узлов, которые необходимо удалить.
 static int comp_sort(const void *const _a,
-                    const void *const _b)
+                     const void *const _b)
 {
     const size_t a = *((size_t*)_a);
     const size_t b = *((size_t*)_b);
@@ -194,8 +194,8 @@ ptrdiff_t c_list_pop_back(c_list *const _list,
 // Не позволяет вставлять узел с указателем на NULL.
 // Позволяет вставлять в пустой список, если _index = 0.
 ptrdiff_t c_list_insert(c_list *const _list,
-                    const void *const _data,
-                    const size_t _index)
+                        const void *const _data,
+                        const size_t _index)
 {
     if (_list == NULL) return -1;
     if (_data == NULL) return -2;
