@@ -68,7 +68,7 @@ int main()
     const size_t indexes_count = 4;
     size_t indexes[indexes_count];
     indexes[0] = 3;
-    indexes[1] = 19;// Узла с таким индексом в сипске нет.
+    indexes[1] = 19;// Узла с таким индексом в списке нет.
     indexes[2] = 9;
     indexes[3] = 1;
     c_list_erase_few(list, indexes, indexes_count, del_func_f);
