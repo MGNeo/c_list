@@ -72,7 +72,6 @@ int main()
     indexes[2] = 9;
     indexes[3] = 1;
     c_list_erase_few(list, indexes, indexes_count, del_func_f);
-    // Почему индексы узлов начинаютяс с 1!?
 
     // Вывод содержимого списка.
     c_list_for_each(list, print_func_f);
