@@ -65,7 +65,7 @@ size_t c_list_erase_few(c_list *const _list,
                         void (*const _del_func)(void *const _data));
 
 size_t c_list_remove_few(c_list *const _list,
-                         size_t (*const _comp)(void *const _data),
+                         size_t (*const _comp)(const void *const _data),
                          void (*const _del_func)(void *const _data));
 
 void *c_list_front(c_list *const _list);

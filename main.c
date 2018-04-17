@@ -11,7 +11,6 @@
 void print_func_f(void *const _data)
 {
     if (_data == NULL) return;
-
     const float data = *((float*)_data);
     printf("%f\n", data);
     return;
@@ -21,54 +20,73 @@ void print_func_f(void *const _data)
 void del_func_f(void *const _data)
 {
     if (_data == NULL) return;
-
     free(_data);
     return;
 }
 
+// Функция оценки критения удаления по данным узла.
+size_t comp_func_f(const void *const _data)
+{
+    if (_data == NULL) return 0;
+    float data = *((float*)_data);
+    if (data < 3.f)
+    {
+        return 1;
+    }
+    return 0;
+}
+
 int main()
 {
+    srand(time(NULL));
+
     // Создание двусвязного списка.
     c_list *list = c_list_create();
 
-    // Добавление в конец десяти элементов.
+    // Вставка в начало.
+    float *data = (float*)malloc(sizeof(float));
+    *data = 3.1415f;
+    c_list_push_front(list, data);
+
+    // Удаление из конца.
+    c_list_pop_back(list, del_func_f);
+
+    // Вставка десяти элементов в позицию с индексом 0 (начало).
     const size_t count = 10;
-    float *data;
     for (size_t i = 0; i < count; ++i)
     {
         data = (float*)malloc(sizeof(float));
-        *data = i * 1.1f;
-        c_list_push_back(list, data);
+        *data = 1.1f * i;
+        c_list_insert(list, data, 0);
     }
 
-
-
-    // Вывод содержимого двусвязного списка.
+    // Вывод содержимого списка.
     c_list_for_each(list, print_func_f);
+    printf("\n");
 
-    // Удаление нескольких узлов с заданными индексами,
-    // индексы хранятся в неупорядоченном виде.
-    const size_t indexes_count = 3;
+    // Удаление сразу нескольких узлов с заданными индексами.
+    const size_t indexes_count = 4;
     size_t indexes[indexes_count];
-    indexes[0] = 7;
-    indexes[1] = 1;
-    indexes[2] = 4;
+    indexes[0] = 3;
+    indexes[1] = 19;// Узла с таким индексом в сипске нет.
+    indexes[2] = 9;
+    indexes[3] = 1;
     c_list_erase_few(list, indexes, indexes_count, del_func_f);
-///////////////////////////////////////////
-c_list_node *select_node = list->first;
-while (select_node != NULL)
-{
-    printf("node: %Iu\nprev: %Iu\nnext: %Iu\ndata: %f\n\n",
-           (size_t)select_node,
-           (size_t)select_node->prev,
-           (size_t)select_node->next,
-           *((float*)select_node->data));
+    // Почему индексы узлов начинаютяс с 1!?
 
-    select_node = select_node->next;
-}
-///////////////////////////////////////////
-    // Вывод содержимого двусвязного списка.
+    // Вывод содержимого списка.
     c_list_for_each(list, print_func_f);
+    printf("\n");
+
+    // Удаление всех узлов, данные которых < 3.f;
+    c_list_remove_few(list, comp_func_f, del_func_f);
+
+    // Вывод содержимого списка.
+    c_list_for_each(list, print_func_f);
+    printf("\n");
+
+    // Удаление списка.
+    c_list_delete(list, del_func_f);
 
     getchar();
     return 0;
