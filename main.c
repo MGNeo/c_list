@@ -8,7 +8,7 @@
 // Проверка возвращаемых значений не выполняется для упрощения.
 
 // Функция печати содержимого узла
-void print_func_f(void *const _data)
+void print_data_f(void *const _data)
 {
     if (_data == NULL) return;
     const float data = *((float*)_data);
@@ -17,7 +17,7 @@ void print_func_f(void *const _data)
 }
 
 // Функция удаления данных узла
-void del_func_f(void *const _data)
+void del_data_f(void *const _data)
 {
     if (_data == NULL) return;
     free(_data);
@@ -25,7 +25,7 @@ void del_func_f(void *const _data)
 }
 
 // Функция оценки критения удаления по данным узла.
-size_t comp_func_f(const void *const _data)
+size_t comp_data_f(const void *const _data)
 {
     if (_data == NULL) return 0;
     float data = *((float*)_data);
@@ -36,7 +36,7 @@ size_t comp_func_f(const void *const _data)
     return 0;
 }
 
-int main()
+int main(int argc, char **argv)
 {
     srand(time(NULL));
 
@@ -49,7 +49,7 @@ int main()
     c_list_push_front(list, data);
 
     // Удаление из конца.
-    c_list_pop_back(list, del_func_f);
+    c_list_pop_back(list, del_data_f);
 
     // Вставка десяти элементов в позицию с индексом 0 (начало).
     const size_t count = 10;
@@ -61,7 +61,7 @@ int main()
     }
 
     // Вывод содержимого списка.
-    c_list_for_each(list, print_func_f);
+    c_list_for_each(list, print_data_f);
     printf("\n");
 
     // Удаление сразу нескольких узлов с заданными индексами.
@@ -71,21 +71,21 @@ int main()
     indexes[1] = 19;// Узла с таким индексом в списке нет.
     indexes[2] = 9;
     indexes[3] = 1;
-    c_list_erase_few(list, indexes, indexes_count, del_func_f);
+    c_list_erase_few(list, indexes, indexes_count, del_data_f);
 
     // Вывод содержимого списка.
-    c_list_for_each(list, print_func_f);
+    c_list_for_each(list, print_data_f);
     printf("\n");
 
     // Удаление всех узлов, данные которых < 3.f;
-    c_list_remove_few(list, comp_func_f, del_func_f);
+    c_list_remove_few(list, comp_data_f, del_data_f);
 
     // Вывод содержимого списка.
-    c_list_for_each(list, print_func_f);
+    c_list_for_each(list, print_data_f);
     printf("\n");
 
     // Удаление списка.
-    c_list_delete(list, del_func_f);
+    c_list_delete(list, del_data_f);
 
     getchar();
     return 0;

@@ -22,34 +22,34 @@
 
 typedef struct s_c_list_node
 {
-    struct s_c_list_node *next,
-                         *prev;
+    struct s_c_list_node *next_node,
+                         *prev_node;
     void *data;
 } c_list_node;
 
 typedef struct s_c_list
 {
-    c_list_node *first,
-                *last;
+    c_list_node *first_node,
+                *last_node;
     size_t nodes_count;
 } c_list;
 
 c_list *c_list_create(void);
 
 ptrdiff_t c_list_delete(c_list *const _list,
-                        void (*const _del_func)(void *const _data));
+                        void (*const _del_data)(void *const _data));
 
 ptrdiff_t c_list_push_front(c_list *const _list,
                             const void *const _data);
 
 ptrdiff_t c_list_pop_front(c_list *const _list,
-                           void (*const _del_func)(void *const _data));
+                           void (*const _del_data)(void *const _data));
 
 ptrdiff_t c_list_push_back(c_list *const _list,
                            const void *const _data);
 
 ptrdiff_t c_list_pop_back(c_list *const _list,
-                          void (*const _del_func)(void *const _data));
+                          void (*const _del_data)(void *const _data));
 
 ptrdiff_t c_list_insert(c_list *const _list,
                         const void *const _data,
@@ -57,16 +57,16 @@ ptrdiff_t c_list_insert(c_list *const _list,
 
 ptrdiff_t c_list_erase(c_list *const _list,
                        const size_t _index,
-                       void (*const _del_func)(void *const _data));
+                       void (*const _del_data)(void *const _data));
 
 size_t c_list_erase_few(c_list *const _list,
                         size_t *const _indexes,
                         const size_t _indexes_count,
-                        void (*const _del_func)(void *const _data));
+                        void (*const _del_data)(void *const _data));
 
 size_t c_list_remove_few(c_list *const _list,
-                         size_t (*const _comp)(const void *const _data),
-                         void (*const _del_func)(void *const _data));
+                         size_t (*const _comp_data)(const void *const _data),
+                         void (*const _del_data)(void *const _data));
 
 void *c_list_front(c_list *const _list);
 
@@ -76,9 +76,9 @@ void *c_list_at(c_list *const _list,
 void *c_list_back(c_list *const _list);
 
 ptrdiff_t c_list_for_each(c_list *const _list,
-                          void (*const _func)(void *const _data));
+                          void (*const _action_data)(void *const _data));
 
 ptrdiff_t c_list_clear(c_list *const _list,
-                       void (*const _del_func)(void* const _data));
+                       void (*const _del_data)(void* const _data));
 
 #endif
