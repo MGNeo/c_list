@@ -73,7 +73,7 @@ ptrdiff_t c_list_push_front(c_list *const _list,
     if (_list->nodes_count == SIZE_MAX) return -3;// Не, ну а вдруг...)
 
     c_list_node *const new_node = (c_list_node*)malloc(sizeof(c_list_node));
-    if (new_node == NULL) return NULL;
+    if (new_node == NULL) return -3;
 
     new_node->next_node = _list->first_node;
     new_node->prev_node = NULL;
@@ -136,7 +136,7 @@ ptrdiff_t c_list_push_back(c_list *const _list,
     if (_list->nodes_count == SIZE_MAX) return -3;// Не, ну а вдруг...)
 
     c_list_node *const new_node = (c_list_node*)malloc(sizeof(c_list_node));
-    if (new_node == NULL) return NULL;
+    if (new_node == NULL) return -3;
 
     new_node->next_node = NULL;
     new_node->prev_node = _list->last_node;
@@ -425,7 +425,7 @@ size_t c_list_erase_few(c_list *const _list,
     // Теперь i_index == количеству корректных индексов.
     i_index += 1;
     // Контроль переполнения.
-    if (i_index < i_index - 1) return NULL;// Не, ну а вдруг...)
+    if (i_index < i_index - 1) return 0;// Не, ну а вдруг...)
 
     // Удалим узлы с заданными индексами и сошьем образовавшиеся в списке разрывы.
     size_t count = 0;
