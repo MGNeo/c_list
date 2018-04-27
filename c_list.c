@@ -73,7 +73,7 @@ ptrdiff_t c_list_push_front(c_list *const _list,
     if (_list->nodes_count == SIZE_MAX) return -3;// Не, ну а вдруг...)
 
     c_list_node *const new_node = (c_list_node*)malloc(sizeof(c_list_node));
-    if (new_node == NULL) return -3;
+    if (new_node == NULL) return -4;
 
     new_node->next_node = _list->first_node;
     new_node->prev_node = NULL;
