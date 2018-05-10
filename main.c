@@ -1,91 +1,74 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <time.h>
 
-#include "c_list.h"
+#include "c_vector.h"
 
 // Проверка возвращаемых значений не выполняется для упрощения.
 
-// Функция печати содержимого узла
-void print_data_f(void *const _data)
+void print_func(void *const _data)
 {
     if (_data == NULL) return;
-    const float data = *((float*)_data);
-    printf("%f\n", data);
+
+    uint8_t *data = _data;
+    printf("%Iu\n", (size_t)(*data));
+
     return;
 }
 
-// Функция удаления данных узла
-void del_data_f(void *const _data)
+int main(int agrc, char **argv)
 {
-    if (_data == NULL) return;
-    free(_data);
-    return;
-}
+    // Создадим вектор для хранения в нем объектов типа (размера) uint8_t.
+    // Начальная емкость вектора = 10.
+    c_vector *vector = c_vector_create(sizeof(uint8_t), 10);
 
-// Функция оценки критения удаления по данным узла.
-size_t comp_data_f(const void *const _data)
-{
-    if (_data == NULL) return 0;
-    float data = *((float*)_data);
-    if (data < 3.f)
+    // Заполним вектор.
+    for (size_t i = 0; i < 10; ++i)
     {
-        return 1;
-    }
-    return 0;
-}
-
-int main(int argc, char **argv)
-{
-    srand(time(NULL));
-
-    // Создание двусвязного списка.
-    c_list *list = c_list_create();
-
-    // Вставка в начало.
-    float *data = (float*)malloc(sizeof(float));
-    *data = 3.1415f;
-    c_list_push_front(list, data);
-
-    // Удаление из конца.
-    c_list_pop_back(list, del_data_f);
-
-    // Вставка десяти элементов в позицию с индексом 0 (начало).
-    const size_t count = 10;
-    for (size_t i = 0; i < count; ++i)
-    {
-        data = (float*)malloc(sizeof(float));
-        *data = 1.1f * i;
-        c_list_insert(list, data, 0);
+        uint8_t *data = c_vector_push_back(vector);
+        *data = i;
     }
 
-    // Вывод содержимого списка.
-    c_list_for_each(list, print_data_f);
+    // Выведем содержимое вектора.
+    printf("vector:\n");
+    c_vector_for_each(vector, print_func);
     printf("\n");
 
-    // Удаление сразу нескольких узлов с заданными индексами.
-    const size_t indexes_count = 4;
-    size_t indexes[indexes_count];
-    indexes[0] = 3;
-    indexes[1] = 19;// Узла с таким индексом в списке нет.
-    indexes[2] = 9;
-    indexes[3] = 1;
-    c_list_erase_few(list, indexes, indexes_count, del_data_f);
+    // Сформируем массив удаляемых индексов.
+    size_t indexes[9] = {8, 0, 10009090, 1, 8, 11, 8, 7, 1};
 
-    // Вывод содержимого списка.
-    c_list_for_each(list, print_data_f);
+    // Отобразим  его.
+    printf("indexes:\n");
+    for (size_t i = 0; i < 9; ++i)
+    {
+        printf("%Iu\n", indexes[i]);
+    }
     printf("\n");
 
-    // Удаление всех узлов, данные которых < 3.f;
-    c_list_remove_few(list, comp_data_f, del_data_f);
+    // Удалим элементы с заданными индексами.
+    c_vector_erase_few(vector, indexes, 9, NULL);
 
-    // Вывод содержимого списка.
-    c_list_for_each(list, print_data_f);
+    // Выведем содержимое вектора.
+    printf("vector:\n");
+    c_vector_for_each(vector, print_func);
     printf("\n");
 
-    // Удаление списка.
-    c_list_delete(list, del_data_f);
+    // Выведем содержимое индексов.
+    printf("indexes: \n");
+    for (size_t i = 0; i < 9; ++i)
+    {
+        printf("%Iu\n",indexes[i]);
+    }
+    printf("\n");
+
+    // Вставим данные по заданному индексу.
+    size_t index = 5;
+    uint8_t *data = c_vector_insert(vector, index);
+    *data = 100;
+
+    // Выведем содержимое вектора.
+    printf("vector:\n");
+    c_vector_for_each(vector, print_func);
+    printf("\n");
 
     getchar();
     return 0;
