@@ -1,75 +1,59 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 
-#include "c_vector.h"
+#include "c_list.h"
 
-// Проверка возвращаемых значений не выполняется для упрощения.
+// В целях упрощения - првоерка возвращаемых значений не выполняется.
 
-void print_func(void *const _data)
+// Функция печати содержимого узла.
+void print_float(void *const _data)
 {
-    if (_data == NULL) return;
+    if (_data == 0)
+    {
+        return;
+    }
 
-    uint8_t *data = _data;
-    printf("%Iu\n", (size_t)(*data));
+    float *data = (float*)_data;
+
+    printf("%f\n", *data);
+
+    return;
+}
+
+// Функция удаления содержимого узла.
+void del_float(void *const _data)
+{
+    if (_data == NULL)
+    {
+        return;
+    }
+
+    free(_data);
 
     return;
 }
 
 int main(int agrc, char **argv)
 {
-    // Создадим вектор для хранения в нем объектов типа (размера) uint8_t.
-    // Начальная емкость вектора = 10.
-    c_vector *vector = c_vector_create(sizeof(uint8_t), 10);
+    // Создание списка.
+    c_list *list = c_list_create();
 
-    // Заполним вектор.
+    // Заполнение списка.
     for (size_t i = 0; i < 10; ++i)
     {
-        uint8_t *data = c_vector_push_back(vector);
-        *data = i;
+        float *data = (float*)malloc(sizeof(float));
+        *data = 3.14f + i;
+
+        c_list_push_front(list, data);
     }
 
-    // Выведем содержимое вектора.
-    printf("vector:\n");
-    c_vector_for_each(vector, print_func);
-    printf("\n");
+    // Вывод содержимого списка.
+    c_list_for_each(list, print_float);
 
-    // Сформируем массив удаляемых индексов.
-    size_t indexes[9] = {8, 0, 10009090, 1, 8, 11, 8, 7, 1};
-
-    // Отобразим  его.
-    printf("indexes:\n");
-    for (size_t i = 0; i < 9; ++i)
-    {
-        printf("%Iu\n", indexes[i]);
-    }
-    printf("\n");
-
-    // Удалим элементы с заданными индексами.
-    c_vector_erase_few(vector, indexes, 9, NULL);
-
-    // Выведем содержимое вектора.
-    printf("vector:\n");
-    c_vector_for_each(vector, print_func);
-    printf("\n");
-
-    // Выведем содержимое индексов.
-    printf("indexes: \n");
-    for (size_t i = 0; i < 9; ++i)
-    {
-        printf("%Iu\n",indexes[i]);
-    }
-    printf("\n");
-
-    // Вставим данные по заданному индексу.
-    size_t index = 5;
-    uint8_t *data = c_vector_insert(vector, index);
-    *data = 100;
-
-    // Выведем содержимое вектора.
-    printf("vector:\n");
-    c_vector_for_each(vector, print_func);
-    printf("\n");
+    // Удаление списка и всех данных в нем.
+    c_list_delete(list, del_float);
 
     getchar();
+
     return 0;
 }

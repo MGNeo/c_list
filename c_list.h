@@ -15,9 +15,6 @@
 #ifndef C_LIST_H
 #define C_LIST_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
 #include <stddef.h>
 
 typedef struct s_c_list_node

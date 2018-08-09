@@ -12,6 +12,10 @@
     Лицензия: GPLv3
 */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
 #include "c_list.h"
 
 // Компаратор для сортировки массива с индексами узлов, которые необходимо удалить.
