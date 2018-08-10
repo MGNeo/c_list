@@ -840,3 +840,15 @@ ptrdiff_t c_list_clear(c_list *const _list,
 
     return 1;
 }
+
+// Возвращает количество узло в списке.
+// В случае ошибки возвращает 0.
+size_t c_list_nodes_count(const c_list *const _list)
+{
+    if (_list == NULL)
+    {
+        return 0;
+    }
+
+    return _list->nodes_count;
+}

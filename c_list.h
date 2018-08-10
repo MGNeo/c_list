@@ -66,4 +66,6 @@ ptrdiff_t c_list_for_each(c_list *const _list,
 ptrdiff_t c_list_clear(c_list *const _list,
                        void (*const _del_data)(void* const _data));
 
+size_t c_list_nodes_count(const c_list *const _list);
+
 #endif
