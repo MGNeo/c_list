@@ -17,19 +17,7 @@
 
 #include <stddef.h>
 
-typedef struct s_c_list_node
-{
-    struct s_c_list_node *next_node,
-                         *prev_node;
-    void *data;
-} c_list_node;
-
-typedef struct s_c_list
-{
-    c_list_node *first_node,
-                *last_node;
-    size_t nodes_count;
-} c_list;
+typedef struct s_c_list c_list;
 
 c_list *c_list_create(void);
 
