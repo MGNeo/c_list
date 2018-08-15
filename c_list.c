@@ -456,103 +456,68 @@ size_t c_list_erase_few(c_list *const _list,
 
     size_t del_flag = 0;
 
-    if (_del_data == NULL)
+    // Макросы дублирования кода для избавления от проверок внутри цикла.
+
+    // Открытие цикла.
+    #define C_LIST_ERASE_FEW_BEGIN\
+    for (size_t i = 0; (i < _list->nodes_count) && (count < i_index); ++i)\
+    {\
+        if (i == _indexes[count])\
+        {\
+            if (del_flag == 0)\
+            {\
+                del_flag = 1;\
+                last_not_deleted_node = select_node->prev_node;\
+                if (i == 0)\
+                {\
+                    _list->first_node = NULL;\
+                }\
+            }\
+            if (i == _list->nodes_count - 1)\
+            {\
+                _list->last_node = NULL;\
+            }\
+            delete_node = select_node;\
+            select_node = select_node->next_node;\
+
+    // Закрытие цикла.
+    #define C_LIST_ERASE_FEW_END\
+            free(delete_node);\
+                ++count;\
+            } else {\
+                if (del_flag == 1)\
+                {\
+                    select_node->prev_node = last_not_deleted_node;\
+                    if (last_not_deleted_node != NULL)\
+                    {\
+                        last_not_deleted_node->next_node = select_node;\
+                    }\
+                    del_flag = 0;\
+                }\
+                if (_list->first_node == NULL)\
+                {\
+                    _list->first_node = select_node;\
+                }\
+                select_node = select_node->next_node;\
+            }\
+        }
+
+    // Функция удаления данных узла задана.
+    if (_del_data != NULL)
     {
-        for (size_t i = 0; (i < _list->nodes_count) && (count < i_index); ++i)
-        {
-            if (i == _indexes[count])
-            {
-                if (del_flag == 0)
-                {
-                    del_flag = 1;
-                    last_not_deleted_node = select_node->prev_node;
+        C_LIST_ERASE_FEW_BEGIN
 
-                    if (i == 0)
-                    {
-                        _list->first_node = NULL;
-                    }
-                }
+        _del_data( delete_node->data );
 
-                if (i == _list->nodes_count - 1)
-                {
-                    _list->last_node = NULL;
-                }
-
-                delete_node = select_node;
-                select_node = select_node->next_node;
-
-                free(delete_node);
-
-                ++count;
-            } else {
-                if (del_flag == 1)
-                {
-                    select_node->prev_node = last_not_deleted_node;
-                    if (last_not_deleted_node != NULL)
-                    {
-                        last_not_deleted_node->next_node = select_node;
-                    }
-                    del_flag = 0;
-                }
-
-                if (_list->first_node == NULL)
-                {
-                    _list->first_node = select_node;
-                }
-
-                select_node = select_node->next_node;
-            }
-        }
+        C_LIST_ERASE_FEW_END
     } else {
-        // Дублирование кода ради повышения производительности,
-        // чтобы на каждом узле не проверять функцию удаления.
-        for (size_t i = 0; (i < _list->nodes_count) && (count < i_index); ++i)
-        {
-            if (i == _indexes[count])
-            {
-                if (del_flag == 0)
-                {
-                    del_flag = 1;
-                    last_not_deleted_node = select_node->prev_node;
-
-                    if (i == 0)
-                    {
-                        _list->first_node = NULL;
-                    }
-                }
-
-                if (i == _list->nodes_count - 1)
-                {
-                    _list->last_node = NULL;
-                }
-
-                delete_node = select_node;
-                select_node = select_node->next_node;
-
-                _del_data( delete_node->data );
-                free(delete_node);
-
-                ++count;
-            } else {
-                if (del_flag == 1)
-                {
-                    select_node->prev_node = last_not_deleted_node;
-                    if (last_not_deleted_node != NULL)
-                    {
-                        last_not_deleted_node->next_node = select_node;
-                    }
-                    del_flag = 0;
-                }
-
-                if (_list->first_node == NULL)
-                {
-                    _list->first_node = select_node;
-                }
-
-                select_node = select_node->next_node;
-            }
-        }
+        // Функция удаления данных узла не задана.
+        C_LIST_ERASE_FEW_BEGIN
+        C_LIST_ERASE_FEW_END
     }
+
+    #undef C_LIST_ERASE_FEW_BEGIN
+    #undef C_LIST_ERASE_FEW_END
 
     // Контроль указателя на первый узел.
     if (_list->first_node == NULL)
@@ -601,103 +566,69 @@ size_t c_list_remove_few(c_list *const _list,
 
     size_t del_flag = 0;
 
-    if (_del_data == NULL)
+    // Макросы дублирования кода для избавления проверок внутри цикла.
+
+    // Открытие цикла.
+    #define C_LIST_REMOVE_FEW_BEGIN\
+    for (size_t i = 0; i < _list->nodes_count; ++i)\
+    {\
+        if (_comp_data(select_node->data) > 0)\
+        {\
+            if (del_flag == 0)\
+            {\
+                del_flag = 1;\
+                last_not_deleted_node = select_node->prev_node;\
+                if (i == 0)\
+                {\
+                    _list->first_node = NULL;\
+                }\
+            }\
+            if (i == _list->nodes_count - 1)\
+            {\
+                _list->last_node = NULL;\
+            }\
+            delete_node = select_node;\
+            select_node = select_node->next_node;
+
+    // Закрытие цикла.
+    #define C_LIST_REMOVE_FEW_END\
+            free(delete_node);\
+            ++count;\
+            } else {\
+                if (del_flag == 1)\
+                {\
+                    select_node->prev_node = last_not_deleted_node;\
+                    if (last_not_deleted_node != NULL)\
+                    {\
+                        last_not_deleted_node->next_node = select_node;\
+                    }\
+                    del_flag = 0;\
+                }\
+                if (_list->first_node == NULL)\
+                {\
+                    _list->first_node = select_node;\
+                }\
+                select_node = select_node->next_node;\
+            }\
+        }
+
+    // Функция удаления данных узла задана.
+    if (_del_data != NULL)
     {
-        for (size_t i = 0; i < _list->nodes_count; ++i)
-        {
-            if (_comp_data(select_node->data) > 0)
-            {
-                if (del_flag == 0)
-                {
-                    del_flag = 1;
-                    last_not_deleted_node = select_node->prev_node;
+        C_LIST_REMOVE_FEW_BEGIN
 
-                    if (i == 0)
-                    {
-                        _list->first_node = NULL;
-                    }
-                }
+        _del_data(delete_node->data);
 
-                if (i == _list->nodes_count - 1)
-                {
-                    _list->last_node = NULL;
-                }
-
-                delete_node = select_node;
-                select_node = select_node->next_node;
-
-                free(delete_node);
-
-                ++count;
-            } else {
-                if (del_flag == 1)
-                {
-                    select_node->prev_node = last_not_deleted_node;
-                    if (last_not_deleted_node != NULL)
-                    {
-                        last_not_deleted_node->next_node = select_node;
-                    }
-                    del_flag = 0;
-                }
-
-                if (_list->first_node == NULL)
-                {
-                    _list->first_node = select_node;
-                }
-
-                select_node = select_node->next_node;
-            }
-        }
+        C_LIST_REMOVE_FEW_END
     } else {
-        // Дублирование кода ради повышения производительности,
-        // чтобы на каждом узле не проверять функцию удаления.
-        for (size_t i = 0; i < _list->nodes_count; ++i)
-        {
-            if (_comp_data(select_node->data) > 0)
-            {
-                if (del_flag == 0)
-                {
-                    del_flag = 1;
-                    last_not_deleted_node = select_node->prev_node;
+        // Функция удаления данных не задана.
+        C_LIST_REMOVE_FEW_BEGIN
 
-                    if (i == 0)
-                    {
-                        _list->first_node = NULL;
-                    }
-                }
-
-                if (i == _list->nodes_count - 1)
-                {
-                    _list->last_node = NULL;
-                }
-
-                delete_node = select_node;
-                select_node = select_node->next_node;
-
-                _del_data(delete_node->data);
-                free(delete_node);
-
-                ++count;
-            } else {
-                if (del_flag == 1)
-                {
-                    select_node->prev_node = last_not_deleted_node;
-                    if (last_not_deleted_node != NULL)
-                    {
-                        last_not_deleted_node->next_node = select_node;
-                    }
-                    del_flag = 0;
-                }
-
-                if (_list->first_node == NULL)
-                {
-                    _list->first_node = select_node;
-                }
-
-                select_node = select_node->next_node;
-            }
-        }
+        C_LIST_REMOVE_FEW_END
     }
+
+    #undef C_LIST_REMOVE_FEW_BEGIN
+    #undef C_LIST_REMOVE_FEW_END
 
     // Контроль указателя на первй узел.
     if (_list->first_node == NULL)
@@ -812,27 +743,37 @@ ptrdiff_t c_list_clear(c_list *const _list,
     c_list_node *select_node = _list->first_node,
                 *delete_node;
 
+    // Макросы дублирования кода для избавления от првоерок внутри цикла.
+
+    // Открытие цикла.
+    #define C_LIST_CLEAR_BEGIN\
+    while (select_node != NULL)\
+    {\
+        delete_node = select_node;\
+        select_node = select_node->next_node;
+
+    // Закрытие цикла.
+    #define C_LIST_CLEAR_END\
+        free(delete_node);\
+    }
+
+    // Функция удаления данных узла задана.
     if (_del_data != NULL)
     {
-        while (select_node != NULL)
-        {
-            delete_node = select_node;
-            select_node = select_node->next_node;
+        C_LIST_CLEAR_BEGIN
 
-            _del_data( delete_node->data );
-            free(delete_node);
-        }
+        _del_data( delete_node->data );
+
+        C_LIST_CLEAR_END
     } else {
-        // Дублирование кода, чтобы на каждом узле не проверять,
-        // задана ли функция удаления.
-        while (select_node != NULL)
-        {
-            delete_node = select_node;
-            select_node = select_node->next_node;
+        // Функция удаления данных узла не задана.
+        C_LIST_CLEAR_BEGIN
 
-            free(delete_node);
-        }
+        C_LIST_CLEAR_END
     }
+
+    #undef C_LIST_CLEAR_BEGIN
+    #undef C_LIST_CLEAR_END
 
     _list->first_node = NULL;
     _list->last_node = NULL;

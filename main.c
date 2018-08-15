@@ -50,6 +50,19 @@ int main(int agrc, char **argv)
     // Вывод содержимого списка.
     c_list_for_each(list, print_float);
 
+    // Удаляем узлы с заданными порядковыми индексами.
+    const size_t indexes_count = 3;
+    size_t indexes[indexes_count];
+    indexes[0] = 7;
+    indexes[1] = 1;
+    indexes[2] = 5;
+
+    c_list_erase_few(list, indexes, indexes_count, del_float);
+
+    // Вывод содержимого списка.
+    printf("\n");
+    c_list_for_each(list, print_float);
+
     // Удаление списка и всех данных в нем.
     c_list_delete(list, del_float);
 
