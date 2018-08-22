@@ -22,8 +22,8 @@ typedef struct s_c_list_node c_list_node;
 
 struct s_c_list_node
 {
-    struct s_c_list_node *next_node,
-                         *prev_node;
+    c_list_node *next_node,
+                *prev_node;
     void *data;
 };
 
