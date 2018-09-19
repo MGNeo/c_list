@@ -19,7 +19,7 @@
 
 typedef struct s_c_list c_list;
 
-c_list *c_list_create(void);
+c_list *c_list_create(size_t *const _error);
 
 ptrdiff_t c_list_delete(c_list *const _list,
                         void (*const _del_data)(void *const _data));
@@ -47,18 +47,23 @@ ptrdiff_t c_list_erase(c_list *const _list,
 size_t c_list_erase_few(c_list *const _list,
                         size_t *const _indexes,
                         const size_t _indexes_count,
-                        void (*const _del_data)(void *const _data));
+                        void (*const _del_data)(void *const _data),
+                        size_t *const _error);
 
 size_t c_list_remove_few(c_list *const _list,
                          size_t (*const _comp_data)(const void *const _data),
-                         void (*const _del_data)(void *const _data));
+                         void (*const _del_data)(void *const _data),
+                         size_t *const _error);
 
-void *c_list_front(c_list *const _list);
+void *c_list_front(c_list *const _list,
+                   size_t *const _error);
 
 void *c_list_at(c_list *const _list,
-                const size_t _index);
+                const size_t _index,
+                size_t *const _error);
 
-void *c_list_back(c_list *const _list);
+void *c_list_back(c_list *const _list,
+                  size_t *const _error);
 
 ptrdiff_t c_list_for_each(c_list *const _list,
                           void (*const _action_data)(void *const _data));

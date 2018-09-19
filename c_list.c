@@ -34,12 +34,28 @@ struct s_c_list
     size_t nodes_count;
 };
 
+// Если расположение задано, в него помещается код.
+static void error_set(size_t *const _error,
+                      const size_t _code)
+{
+    if (_error != NULL)
+    {
+        *_error = _code;
+    }
+}
+
 // Компаратор для сортировки массива с индексами узлов, которые необходимо удалить.
 static int comp_sort(const void *const _index_a,
                      const void *const _index_b)
 {
+    if ( (_index_a == NULL) || (_index_b == NULL) )
+    {
+        return 0;
+    }
+
     const size_t index_a = *((size_t*)_index_a);
     const size_t index_b = *((size_t*)_index_b);
+
     if (index_a > index_b)
     {
         return 1;
@@ -54,11 +70,16 @@ static int comp_sort(const void *const _index_a,
 }
 
 // Создает новый двусвязный список.
-// В случае ошибки возвращает NULL.
-c_list *c_list_create(void)
+// В случае ошибки возвращает NULL, и если _error != NULL, в заданное расположение
+// помещается код причины ошибки (> 0).
+c_list *c_list_create(size_t *const _error)
 {
-    c_list *const new_list = (c_list*)malloc(sizeof(c_list));
-    if (new_list == NULL) return NULL;
+    c_list *const new_list = malloc(sizeof(c_list));
+    if (new_list == NULL)
+    {
+        error_set(_error, 1);
+        return NULL;
+    }
 
     new_list->first_node = NULL;
     new_list->last_node = NULL;
@@ -68,7 +89,8 @@ c_list *c_list_create(void)
 }
 
 // Удаляет двусвязный список.
-// В случае успеха возвращает > 0, иначе < 0.
+// В случае успеха возвращает > 0.
+// В случае ошибки возвращает < 0.
 ptrdiff_t c_list_delete(c_list *const _list,
                         void (*const _del_data)(void *const _data))
 {
@@ -93,7 +115,7 @@ ptrdiff_t c_list_push_front(c_list *const _list,
     if (_data == NULL) return -2;
     if (_list->nodes_count == SIZE_MAX) return -3;// Не, ну а вдруг...)
 
-    c_list_node *const new_node = (c_list_node*)malloc(sizeof(c_list_node));
+    c_list_node *const new_node = malloc(sizeof(c_list_node));
     if (new_node == NULL) return -4;
 
     new_node->next_node = _list->first_node;
@@ -157,7 +179,7 @@ ptrdiff_t c_list_push_back(c_list *const _list,
     if (_data == NULL) return -2;
     if (_list->nodes_count == SIZE_MAX) return -3;// Не, ну а вдруг...)
 
-    c_list_node *const new_node = (c_list_node*)malloc(sizeof(c_list_node));
+    c_list_node *const new_node = malloc(sizeof(c_list_node));
     if (new_node == NULL) return -3;
 
     new_node->next_node = NULL;
@@ -210,8 +232,9 @@ ptrdiff_t c_list_pop_back(c_list *const _list,
     return 1;
 }
 
-// Добавление данных в заданную позицию, от начала, от 0.
+// Добавляет данные в заданную позицию, от начала, от 0.
 // В случае успеха возвращает > 0, данные захватываются списком.
+// Если индекс оказался > количества узлов, функция возвращает 0, данные не захватываются списком.
 // В случае ошибки возвращает < 0, данные не захватываются списком.
 // Не позволяет добавлять NULL.
 // Позволяет добавлять в пустой список, если _index = 0.
@@ -222,10 +245,10 @@ ptrdiff_t c_list_insert(c_list *const _list,
     if (_list == NULL) return -1;
     if (_data == NULL) return -2;
     if (_list->nodes_count == SIZE_MAX) return -3;// Не, ну а вдруг...)
-    if (_index > _list->nodes_count) return -4;
+    if (_index > _list->nodes_count) return 0;
 
-    c_list_node *const new_node = (c_list_node*)malloc(sizeof(c_list_node));
-    if (new_node == NULL) return -5;
+    c_list_node *const new_node = malloc(sizeof(c_list_node));
+    if (new_node == NULL) return -4;
 
     // Если список пуст.
     if (_list->nodes_count == 0)
@@ -312,15 +335,14 @@ ptrdiff_t c_list_insert(c_list *const _list,
 
 // Убирает данные с заданным порядковым индексом, от начала, от 0.
 // В случае успеха возвращает > 0.
-// Если список пуст, возвращает 0.
+// Если индекс оказался >= количеству узлов, функция возврает 0.
 // В случае ошибки возвращает < 0.
 ptrdiff_t c_list_erase(c_list *const _list,
                        const size_t _index,
                        void (*const _del_data)(void *const _data))
 {
     if (_list == NULL) return -1;
-    if (_list->nodes_count == 0) return 0;
-    if (_index >= _list->nodes_count) return -2;
+    if (_index >= _list->nodes_count) return 0;
 
     c_list_node *delete_node;
 
@@ -416,17 +438,25 @@ ptrdiff_t c_list_erase(c_list *const _list,
     }
 }
 
-// Убирает данные с заданными опрядковыми индексами, от начала, от 0.
+// Убирает данные с заданными порядковыми индексами, от начала, от 0.
 // Массив индексов сортируется.
 // Наличие несуществующих или одинаковых индексов не считается ошибкой.
 // В случае успешного убирания возвращает количество убранных данных.
-// В случае ошибки возвращает < 0.
+// В случае ошибки возвращает 0, и если _error != NULL, в заданное расположение помещается
+// код причины ошибки (> 0).
+// Так как функция может возвращать 0 и в случае успеха, и в случае ошибки, для детектирования
+// ошибки перед вызовом функции необходимо поместить 0 в заданное расположение ошибки.
 size_t c_list_erase_few(c_list *const _list,
                         size_t *const _indexes,
                         const size_t _indexes_count,
-                        void (*const _del_data)(void *const _data))
+                        void (*const _del_data)(void *const _data),
+                        size_t *const _error)
 {
-    if (_list == NULL) return 0;
+    if (_list == NULL)
+    {
+        error_set(_error, 1);
+        return 0;
+    }
     if (_indexes == NULL) return 0;
     if (_indexes_count == 0) return 0;
     if (_list->nodes_count == 0) return 0;
@@ -450,7 +480,11 @@ size_t c_list_erase_few(c_list *const _list,
     // Теперь i_index == количеству корректных индексов.
     i_index += 1;
     // Контроль переполнения.
-    if (i_index < i_index - 1) return 0;// Не, ну а вдруг...)
+    if (i_index < i_index - 1)// Не, ну а вдруг...)
+    {
+        error_set(_error, 2);
+        return 0;
+    }
 
     // Удалим узлы с заданными индексами и сошьем образовавшиеся в списке разрывы.
     size_t count = 0;
@@ -534,7 +568,7 @@ size_t c_list_erase_few(c_list *const _list,
     {
         _list->last_node = last_not_deleted_node;
     }
-    // Сшивание разрыв списка, если вдруг разрыв остался.
+    // Сшиваем разрыв списка, если вдруг разрыв остался.
     if (del_flag == 1)
     {
         if (last_not_deleted_node != NULL)
@@ -552,15 +586,27 @@ size_t c_list_erase_few(c_list *const _list,
     return count;
 }
 
-// Убирает из списка все данные, для которых _comp возвращает > 0.
+// Убирает из списка все данные, для которых _pred_data возвращает > 0.
 // Возвращает количество убранных данных.
-// В случае ошибки возвращает 0.
+// В случае ошибки возвращает 0, и если _error != NULL, в заданное расположение помещается
+// код причины ошибки (> 0).
+// Так как функция может возвращать 0 и в случае успеха, и в случае ошибки, для детектирования
+// ошибки перед вызовом функции необходимо поместить 0 в заданное расположение ошибки.
 size_t c_list_remove_few(c_list *const _list,
-                         size_t (*const _comp_data)(const void *const _data),
-                         void (*const _del_data)(void *const _data))
+                         size_t (*const _pred_data)(const void *const _data),
+                         void (*const _del_data)(void *const _data),
+                         size_t *const _error)
 {
-    if (_list == NULL) return 0;
-    if (_comp_data == NULL) return 0;
+    if (_list == NULL)
+    {
+        error_set(_error, 1);
+        return 0;
+    }
+    if (_pred_data == NULL)
+    {
+        error_set(_error, 2);
+        return 0;
+    }
     if (_list->nodes_count == 0) return 0;
 
     size_t count = 0;
@@ -577,7 +623,7 @@ size_t c_list_remove_few(c_list *const _list,
     #define C_LIST_REMOVE_FEW_BEGIN\
     for (size_t i = 0; i < _list->nodes_count; ++i)\
     {\
-        if (_comp_data(select_node->data) > 0)\
+        if (_pred_data(select_node->data) > 0)\
         {\
             if (del_flag == 0)\
             {\
@@ -664,21 +710,39 @@ size_t c_list_remove_few(c_list *const _list,
 }
 
 // Обращается к данным в начале списка.
-// В случае ошибки возвращает NULL.
-void *c_list_front(c_list *const _list)
+// В случае ошибки возвращает NULL, и если _error != NULL, в заданное расположение
+// помещается код причины ошибки (> 0).
+// Если список пуст, возвращает NULL, это не считается ошибкой.
+// Так как функция может возвращать NULL и в случае успеха, и в случае ошибки, для детектирования
+// ошибки перед вызовом функции необходимо поместить 0 в заданное расположение ошибки.
+void *c_list_front(c_list *const _list,
+                   size_t *const _error)
 {
-    if (_list == NULL) return NULL;
+    if (_list == NULL)
+    {
+        error_set(_error, 1);
+        return NULL;
+    }
     if (_list->nodes_count == 0) return NULL;
 
     return _list->first_node->data;
 }
 
 // Обращается к данным с заданным порядковым индексом, от начала, от 0.
-// В случае ошибки возвращает NULL.
+// В случае ошибки возвращает NULL, и если _error != NULL, в заданное расположение
+// помещается код причины ошибки (> 0).
+// Если индекс оказался >= количеству узлов, функция возвращает NULL, это не считается ошибкой.
+// Так как функция может возвращать NULL и в случае успеха, и в случае ошибки, для детектирования
+// ошибки перед вызовом функции необходимо поместить 0 в заданное расположение ошибки.
 void *c_list_at(c_list *const _list,
-                const size_t _index)
+                const size_t _index,
+                size_t *const _error)
 {
-    if (_list == NULL) return NULL;
+    if (_list == NULL)
+    {
+        error_set(_error, 1);
+        return NULL;
+    }
     if (_index >= _list->nodes_count) return NULL;
 
     c_list_node *select_node;
@@ -704,10 +768,19 @@ void *c_list_at(c_list *const _list,
 }
 
 // Обращается к данным в конце списка.
-// В случае ошибки возвращает NULL.
-void *c_list_back(c_list *const _list)
+// В случае ошибки возвращает NULL, и если _error != NULL, в заданное расположение
+// помещается код причины ошибки (> 0).
+// Если список пуст, функция возвращает NULL, это не считается ошибкой.
+// Так как функция может возвращать NULL и в случае успеха, и в случае ошибки, для детектирования ошибки
+// перед вызовом функции необходимо поместить 0 в заданное расположение ошибки.
+void *c_list_back(c_list *const _list,
+                  size_t *const _error)
 {
-    if (_list == NULL) return NULL;
+    if (_list == NULL)
+    {
+        error_set(_error, 1);
+        return NULL;
+    }
     if (_list->nodes_count == 0) return NULL;
 
     return _list->last_node->data;
@@ -787,8 +860,11 @@ ptrdiff_t c_list_clear(c_list *const _list,
     return 1;
 }
 
-// Возвращает количество узло в списке.
-// В случае ошибки возвращает 0.
+// Возвращает количество узлов в списке.
+// В случае ошибки возвращает 0, и если _error != NULL, в заданное расположение помещается
+// код причины ошибки.
+// Так как функция может возвращать 0 и в случае успеха, и в случае ошибки, для детектирования
+// ошибки перед вызовом функции необходимо поместить 0 в заданное расположение ошибки.
 size_t c_list_nodes_count(const c_list *const _list)
 {
     if (_list == NULL)
